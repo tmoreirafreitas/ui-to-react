@@ -17,7 +17,7 @@ const DataTable = (props) => {
         dispatch(allActions.tableActions.paginate(objToPagination));                     
     }, []);
     
-    function renderPagination(config){
+    function renderTablePagination(config){
         let items = [];        
         if(config){                        
             let paginators = config;
@@ -50,7 +50,7 @@ const DataTable = (props) => {
         if(table.payload){            
             return table.payload.data.map((data, rowIndex) =>{
                 return (
-                    <tr key={`row-${rowIndex}`}>
+                    <tr key={`row-${rowIndex}`} tr-index={rowIndex}>
                         {
                             dataColumns.map((_column, columnIndex)=>{                                 
                                 return (<Column key = {`${rowIndex}-${columnIndex}`}
@@ -119,13 +119,10 @@ const DataTable = (props) => {
                     {renderTableData()}
                 </tbody>
             </table>
-            {
-
-            }
             <Pagination>
                 <Pagination.First onClick={(e) => pageHandleClick(e, "First")} />
                 <Pagination.Prev onClick={(e) => pageHandleClick(e, "Prev")} />
-                {renderPagination(table.payload)}
+                {renderTablePagination(table.payload)}
                 <Pagination.Next onClick={(e) => {pageHandleClick(e, "Next")}} />
                 <Pagination.Last onClick={(e) => pageHandleClick(e, "Last")} />
             </Pagination>

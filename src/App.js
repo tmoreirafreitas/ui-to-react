@@ -50,7 +50,7 @@ const App = () =>{
 
   return(
     <div className="App">              
-      <DataTable dataColumns={columns} dataRows={data} items_per_page = {3} title="Registro de Pacientes"/>
+      <DataTable dataColumns={columns} dataRows={data} items_per_page = {4} title="Registros"/>
     </div>
   );
 }
