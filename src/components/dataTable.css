@@ -19,6 +19,11 @@
     padding: 0.65%;
 }
 
+.dataTable .column{
+    border: 1px solid #ddd;
+    padding: 0.65%;
+}
+
 .dataTable tr:nth-child(even){background-color: #f2f2f2;}
 
 .dataTable tr:hover {background-color: #ddd;}
