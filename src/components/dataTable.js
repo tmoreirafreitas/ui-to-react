@@ -14,12 +14,12 @@ const DataTable = (props) => {
     let objToPagination = {items:props.dataRows,page:1,per_page:props.items_per_page};
     
     useEffect(() => {               
-        dispatch(allActions.tableActions.paginate(objToPagination));                     
+        dispatch(allActions.tableActions.paginate(objToPagination));
     }, []);
     
     function renderTablePagination(config){
-        let items = [];        
-        if(config){                        
+        let items = [];
+        if(config){
             let paginators = config;
             for (let number = 1; number <= paginators.total_pages; number++) {
                 items.push(
@@ -29,15 +29,16 @@ const DataTable = (props) => {
                 );
             }             
         }             
-        return items;         
+        return items;
     }
-    function renderTableHeader() {                    
-        return dataColumns.map((_column, columnIndex) =>{        
+    function renderTableHeader() {
+        return dataColumns.map((_column, columnIndex) =>{
             return (<Column key={columnIndex}
                     header = {true}                                  
                     columnName = {_column.columnName}
                     content = {_column.content}
                     filterable = {_column.filterable?_column.filterable:false}
+                    enableSort = {_column.enableSort?_column.enableSort:false}
                     isSorted = {_column.isSorted?_column.isSorted:false}
                     isSortedDesc = {_column.isSortedDesc?_column.isSortedDesc:false}
                     filterInput = {_column.filterInput?_column.filterInput:""}

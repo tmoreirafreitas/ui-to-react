@@ -38,6 +38,12 @@
     font-weight: bold;
 }
 
+.dataTable .btn{
+    background-color: #226168 !important;
+    border-color: #226168 !important;
+    padding: 5%;
+}
+
 .pagination{    
     margin-top: 0.5%;
     margin-left: auto;

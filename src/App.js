@@ -3,7 +3,6 @@ import './App.css';
 import DataTable from './components/DataTable';
 
 const App = () =>{
-  // const columns = ["Nome", "Idade", "Altura"];
   const columns = [
     // {
     //   columName: "Action",
@@ -16,7 +15,8 @@ const App = () =>{
     {
       columName: "Nome",
       content: "Nome",
-      filterable: false,
+      filterable: true,
+      enableSort: true,
       isSorted: false,
       isSortedDesc: false,
       disabled: false
@@ -24,7 +24,8 @@ const App = () =>{
     {
       columName: "Idade",
       content: "Idade",
-      filterable: false,
+      filterable: true,
+      enableSort: true,
       isSorted: false,
       isSortedDesc: false,
       disabled: false
@@ -32,7 +33,8 @@ const App = () =>{
     {
       columName: "Altura",
       content: "Altura",
-      filterable: false,
+      filterable: true,
+      enableSort: true,
       isSorted: false,
       isSortedDesc: false,
       disabled: false
@@ -50,7 +52,7 @@ const App = () =>{
 
   return(
     <div className="App">              
-      <DataTable dataColumns={columns} dataRows={data} items_per_page = {4} title="Registros"/>
+      <DataTable dataColumns={columns} dataRows={data} items_per_page = {3} title="Registros"/>
     </div>
   );
 }
