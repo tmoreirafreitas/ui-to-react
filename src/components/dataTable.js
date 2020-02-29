@@ -1,155 +1,142 @@
-import React, {Component} from 'react';
+import React, { useState, useEffect } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import allActions from '../actions';
+import Column from './Column'
 import Pagination from 'react-bootstrap/Pagination';
-import './dataTable.css';
+import './DataTable.css';
 
-export default class DataTable extends Component{    
-    constructor(props){
-        super(props);
-        this.state = {            
-            title: "",
-            dataColumns: [],
-            dataRows: [{}],
-            action: {},
-            items_per_page: 10,
-            itemsPaginations: [],
-            paginators: {},
-        };
+const DataTable = (props) => {     
+    const [title] = useState(props.title?props.title:"");
+    const [dataColumns] = useState(props.dataColumns?props.dataColumns:[{}]);    
+    const [items_per_page] = useState(props.items_per_page?props.items_per_page:10);       
+    const table = useSelector(state => state.table);
+    const dispatch = useDispatch();    
+    let objToPagination = {items:props.dataRows,page:1,per_page:props.items_per_page};
+    
+    useEffect(() => {               
+        dispatch(allActions.tableActions.paginate(objToPagination));
+    }, []);
+    
+    function renderTablePagination(config){
+        let items = [];
+        if(config){
+            let paginators = config;
+            for (let number = 1; number <= paginators.total_pages; number++) {
+                items.push(
+                    <Pagination.Item key={number} active={number === paginators.page} onClick={(e) => pageHandleClick(e, number)}>
+                        {number}
+                    </Pagination.Item>
+                );
+            }             
+        }             
+        return items;
+    }
+
+    function renderTableHeader() {
+        return dataColumns.map((_column, columnIndex) =>{
+            return (<Column key={columnIndex}
+                    header = {true}                                  
+                    columnName = {_column.columnName}
+                    content = {_column.content}
+                    filterable = {_column.filterable?_column.filterable:false}
+                    enableSort = {_column.enableSort?_column.enableSort:false}
+                    isSorted = {_column.isSorted?_column.isSorted:false}
+                    isSortedDesc = {_column.isSortedDesc?_column.isSortedDesc:false}
+                    onClickSort = {_column.enableSort?(e, data)=>{
+                        e.preventDefault();
+                        dispatch(allActions.tableActions.sortElementsBy({key: data.columnName, order: data.order, rows: props.dataRows}));
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    } : (e, data)=> {return;}}
+                    onClickFilter = {_column.filterable?(e, data) => {
+                        e.preventDefault();
+                    } : (e, data) => {return;}}
+                    filterInput = {_column.filterInput?_column.filterInput:""}
+                    disabled = {_column.disabled?_column.disabled:false}
+                    ></Column>);
+        });
+    }
+
+    function renderTableData () {                
+        if(table.payload){            
+            return table.payload.data.map((data, rowIndex) =>{
+                return (
+                    <tr key={`row-${rowIndex}`} tr-index={rowIndex}>
+                        {
+                            dataColumns.map((_column, columnIndex)=>{                                 
+                                return (<Column key = {`${rowIndex}-${columnIndex}`}
+                                        header = {false}
+                                        content={data[dataColumns[columnIndex].columnName]}
+                                        disabled = {_column.disabled?_column.disabled:false}>                                                
+                                    </Column>)                                                       
+                            })
+                        }
+                    </tr>
+                );
+            });
+        }
     }    
 
-    componentDidMount(){        
-        let items = [];
-        let paginators = this.paginator(this.props.data, 1, this.props.items_per_page);
-        for (let number = 1; number <= paginators.total_pages; number++) {
-            items.push(
-                <Pagination.Item key={number} active={number === paginators.page} onClick={(e) => this.pageHandleClick(e, number)}>
-                    {number}
-                </Pagination.Item>,
-            );
-        }
-
-        this.setState(
-            {
-                title: this.props.title,
-                dataColumns: this.props.columns, 
-                dataRows: paginators.data, 
-                action:{}, 
-                items_per_page: this.props.items_per_page,
-                itemsPaginations: items,
-                paginators: paginators,
-            }
-        );
-    }
-
-    paginator = (items, page, per_page) =>{
-        var page = page || 1,
-        per_page = per_page || 10,
-        offset = (page - 1) * per_page,
-       
-        paginatedItems = items.slice(offset).slice(0, per_page),
-        total_pages = Math.ceil(items.length / per_page);
-        return {
-            page: page,
-            per_page: per_page,
-            pre_page: page - 1 ? page - 1 : null,
-            next_page: (total_pages > page) ? page + 1 : null,
-            total: items.length,
-            total_pages: total_pages,
-            data: paginatedItems
-        };
-    }
-
-    renderTableHeader =  () => {        
-        const {dataColumns} = this.state;
-        return dataColumns.map((key, index) =>{
-            return <th key={index}>{key.toUpperCase()}</th>
-        });
-    }
-
-    renderTableData = () => {
-        const {dataColumns, dataRows} = this.state;
-        return dataRows.map((data, indexData) =>{
-            return (
-                <tr key={indexData}>
-                    {
-                        dataColumns.map((column, indexColumn)=>{
-                            return <td key={indexColumn}>{data[column]}</td>
-                        })
-                    }
-                </tr>
-            );
-        });
-    }
-
-    pageHandleClick = (event, index) =>{        
+    function pageHandleClick(event, index){
         event.preventDefault();
-        let paginators = {};
-        switch (index) {
-            case "First":      
-                if(Number(this.state.paginators.page) !== 1){
-                    paginators = this.paginator(this.props.data, 1, this.state.items_per_page);
-                    this.setState({paginators, dataRows: paginators.data});
-                }          
-                break;
-        
-            case "Prev":     
-                if(Number(this.state.paginators.page) !== 1){
-                    paginators = this.paginator(this.props.data, this.state.paginators.page - 1, this.state.items_per_page);
-                    this.setState({paginators, dataRows: paginators.data});
-                }           
-                break;
+        if(table.payload){                        
+            switch (index) {
+                case "First":      
+                    if(Number(table.payload.page) !== 1){
+                        objToPagination = {items: props.dataRows, page: 1, per_page: items_per_page};
+                        dispatch(allActions.tableActions.paginate(objToPagination));                        
+                    }          
+                    break;
+            
+                case "Prev":     
+                    if(Number(table.payload.page) !== 1){
+                        objToPagination = {items:props.dataRows, page: table.payload.page - 1, per_page: items_per_page};
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    }           
+                    break;
 
-            case "Next":           
-                if(this.state.paginators.page !== this.state.paginators.total_pages){
-                    paginators = this.paginator(this.props.data, this.state.paginators.page + 1, this.state.items_per_page);
-                    this.setState({paginators, dataRows: paginators.data});
-                }     
-                break;
+                case "Next":           
+                    if(table.payload.page !== table.payload.total_pages){
+                        objToPagination = {items: props.dataRows, page: table.payload.page + 1, per_page: items_per_page};
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    }     
+                    break;
 
-            case "Last":       
-                if(this.state.paginators.page !== this.state.paginators.total_pages){
-                    paginators = this.paginator(this.props.data, this.state.paginators.total_pages, this.state.items_per_page);
-                    this.setState({paginators, dataRows: paginators.data});
-                }
-                break;
+                case "Last":       
+                    if(table.payload.page !== table.payload.total_pages){
+                        objToPagination = {items: props.dataRows, page: table.payload.total_pages, per_page: items_per_page};
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    }
+                    break;
 
-            default:
-                if(this.state.paginators.page !== index){
-                    paginators = this.paginator(this.props.data, index, this.state.items_per_page);
-                    this.setState({paginators, dataRows: paginators.data});
-                }                
-                break;
-        }
-
-        this.state.itemsPaginations = []; 
-        for (let number = 1; number <= paginators.total_pages; number++) {
-            this.state.itemsPaginations.push(
-                <Pagination.Item key={number} active={number === paginators.page} onClick={(e) => this.pageHandleClick(e, number)}>
-                    {number}
-                </Pagination.Item>,
-            );
-        }
-    }
-
-    render() {       
-        return (
-            <div className="box-data-table">
-                <h2>{this.state.title}</h2>
-                <table className="dataTable">
-                    <thead>
-                        <tr>{this.renderTableHeader()}</tr>
-                    </thead>
-                    <tbody>                        
-                        {this.renderTableData()}
-                    </tbody>
-                </table>
-                <Pagination>
-                    <Pagination.First onClick={(e) => this.pageHandleClick(e, "First")} />
-                    <Pagination.Prev onClick={(e) => this.pageHandleClick(e, "Prev")} />
-                    {this.state.itemsPaginations}
-                    <Pagination.Next onClick={(e) => this.pageHandleClick(e, "Next")} />
-                    <Pagination.Last onClick={(e) => this.pageHandleClick(e, "Last")} />
-                </Pagination>
-            </div>
-        );
-    }
+                default:
+                    if(table.payload.page !== index){
+                        objToPagination = {items: props.dataRows, page: index, per_page: items_per_page};
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    }                
+                    break;
+            }            
+        }          
+    }        
+    
+    return (        
+        <div className="box-data-table">
+            <h3>{title}</h3>
+            <table className="dataTable">
+                <thead>
+                    <tr>{renderTableHeader()}</tr>
+                </thead>
+                <tbody>                        
+                    {renderTableData()}
+                </tbody>
+            </table>
+            <Pagination>
+                <Pagination.First onClick={(e) => pageHandleClick(e, "First")} />
+                <Pagination.Prev onClick={(e) => pageHandleClick(e, "Prev")} />
+                {renderTablePagination(table.payload)}
+                <Pagination.Next onClick={(e) => {pageHandleClick(e, "Next")}} />
+                <Pagination.Last onClick={(e) => pageHandleClick(e, "Last")} />
+            </Pagination>
+        </div>
+    );
 }
+export default DataTable
