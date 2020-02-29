@@ -31,6 +31,7 @@ const DataTable = (props) => {
         }             
         return items;
     }
+
     function renderTableHeader() {
         return dataColumns.map((_column, columnIndex) =>{
             return (<Column key={columnIndex}
@@ -41,6 +42,14 @@ const DataTable = (props) => {
                     enableSort = {_column.enableSort?_column.enableSort:false}
                     isSorted = {_column.isSorted?_column.isSorted:false}
                     isSortedDesc = {_column.isSortedDesc?_column.isSortedDesc:false}
+                    onClickSort = {_column.enableSort?(e, data)=>{
+                        e.preventDefault();
+                        dispatch(allActions.tableActions.sortElementsBy({key: data.columnName, order: data.order, rows: props.dataRows}));
+                        dispatch(allActions.tableActions.paginate(objToPagination));
+                    } : (e, data)=> {return;}}
+                    onClickFilter = {_column.filterable?(e, data) => {
+                        e.preventDefault();
+                    } : (e, data) => {return;}}
                     filterInput = {_column.filterInput?_column.filterInput:""}
                     disabled = {_column.disabled?_column.disabled:false}
                     ></Column>);
@@ -56,7 +65,7 @@ const DataTable = (props) => {
                             dataColumns.map((_column, columnIndex)=>{                                 
                                 return (<Column key = {`${rowIndex}-${columnIndex}`}
                                         header = {false}
-                                        content={data[dataColumns[columnIndex].columName]}
+                                        content={data[dataColumns[columnIndex].columnName]}
                                         disabled = {_column.disabled?_column.disabled:false}>                                                
                                     </Column>)                                                       
                             })
@@ -65,7 +74,7 @@ const DataTable = (props) => {
                 );
             });
         }
-    }
+    }    
 
     function pageHandleClick(event, index){
         event.preventDefault();
@@ -111,7 +120,7 @@ const DataTable = (props) => {
     
     return (        
         <div className="box-data-table">
-            <h2>{title}</h2>
+            <h3>{title}</h3>
             <table className="dataTable">
                 <thead>
                     <tr>{renderTableHeader()}</tr>
@@ -130,5 +139,4 @@ const DataTable = (props) => {
         </div>
     );
 }
-
 export default DataTable

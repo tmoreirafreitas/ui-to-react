@@ -1,6 +1,7 @@
-import { CLICK_DELETE_VALUE, CLICK_FILTER_VALUE, CLICK_SORT_VALUE, CLICK_PAGINATE } from "./actionsTypes"
+import { CLICK_DELETE_VALUE, CLICK_FILTER_VALUE, CLICK_SORT_VALUE, CLICK_PAGINATE } from "./actionsTypes";
+import utils from "../utils";
 
-const deleteItem = (id) => {    
+const deleteItem = (id) => {
     return {
         type: CLICK_DELETE_VALUE,
         payload: id
@@ -8,6 +9,7 @@ const deleteItem = (id) => {
 }
 
 const filterItemsBy = (property = {}) =>{
+    console.log('filterItemsBy: ', property)
     return {
         type: CLICK_FILTER_VALUE,
         payload: property
@@ -15,9 +17,14 @@ const filterItemsBy = (property = {}) =>{
 }
 
 const sortElementsBy = (property = {}) =>{
+    let data = null;
+    if(property.key && property.order && property.rows){
+        data = property.rows;
+        data.sort(utils.compareValues(property.key, property.order));
+    }
     return{
         type: CLICK_SORT_VALUE,
-        payload: property
+        payload: data
     }
 }
 

@@ -13,7 +13,7 @@ const App = () =>{
     //   disabled: false
     // },
     {
-      columName: "Nome",
+      columnName: "Nome",
       content: "Nome",
       filterable: true,
       enableSort: true,
@@ -22,7 +22,7 @@ const App = () =>{
       disabled: false
     },
     {
-      columName: "Idade",
+      columnName: "Idade",
       content: "Idade",
       filterable: true,
       enableSort: true,
@@ -31,7 +31,7 @@ const App = () =>{
       disabled: false
     },
     {
-      columName: "Altura",
+      columnName: "Altura",
       content: "Altura",
       filterable: true,
       enableSort: true,
