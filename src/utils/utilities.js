@@ -22,5 +22,5 @@ const compareValues = (key, order = 'asc') => {
 }
 
 export default {
-    compareValues
+    compareValues,
 }

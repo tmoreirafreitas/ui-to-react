@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faSort, faSortAmountDownAlt, faSortAmountDown } from "@fortawesome/free-solid-svg-icons";
+import {Button, ButtonToolbar, OverlayTrigger, Popover} from 'react-bootstrap';
+import SelectBoxFilter from './select-box/SelectBoxFilter';
 
 const Column = props => {
   const [header, setHeader] = useState(props.header?props.header:false);
@@ -90,8 +92,42 @@ const Column = props => {
 
   function renderButtonFilter(){
     iconFilter = <i>{<FontAwesomeIcon icon={faFilter}/>}</i>
-    return (<button type="button" className="btn btn-primary">{iconFilter}</button>);
-  }    
+    return(
+      <div className="dropdown">
+        <OverlayTrigger trigger="click" placement="bottom" overlay={renderPopover(`bottom-${columnName}`)}>
+          <Button variant="primary" data-toggle="dropdown">{iconFilter}</Button>
+        </OverlayTrigger>
+      </div>
+    );
+  } 
+
+  function filterFunction(e) {
+    props.onClickFilter(e, columnName);
+    // let input, filter, ul, li, a, i;
+    // input = document.getElementById("myInput");
+    // filter = input.value.toUpperCase();
+    // let div = document.getElementById("myDropdown");
+    // a = div.getElementsByTagName("a");
+    // for (i = 0; i < a.length; i++) {
+    //   let txtValue = a[i].textContent || a[i].innerText;
+    //   if (txtValue.toUpperCase().indexOf(filter) > -1) {
+    //     a[i].style.display = "";
+    //   } else {
+    //     a[i].style.display = "none";
+    //   }
+    // }
+  }
+  
+  function renderPopover(placement){
+    const popover = (
+      <Popover id={`popover-positioned-${placement}`}>
+          <Popover.Content>
+            <SelectBoxFilter onChange = {(e) => filterFunction(e)}></SelectBoxFilter>
+          </Popover.Content>
+        </Popover>
+    );
+    return (popover);   
+  }
   
   const columnMarkup = header ? (
       <th className="column column-header" ref={thEl}>

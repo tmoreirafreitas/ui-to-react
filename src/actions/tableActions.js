@@ -9,10 +9,22 @@ const deleteItem = (id) => {
 }
 
 const filterItemsBy = (property = {}) =>{
-    console.log('filterItemsBy: ', property)
+    console.log('filterItemsBy: ', property);
+    let data = [];
+    let filtered = [];
+    let key = property.key || null;
+    console.log('key: ', key);
+    if(property.rows){
+        if(property.rows.lenght > 0){
+            data = property.rows;
+            filtered = data.filter(item => {
+                if(item.toString().includes(property.valueToFilter)) return data;
+            }); 
+        }
+    }
     return {
         type: CLICK_FILTER_VALUE,
-        payload: property
+        payload: filtered
     }
 }
 

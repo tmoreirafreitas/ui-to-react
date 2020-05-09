@@ -49,6 +49,7 @@ const DataTable = (props) => {
                     } : (e, data)=> {return;}}
                     onClickFilter = {_column.filterable?(e, data) => {
                         e.preventDefault();
+                        dispatch(allActions.tableActions.filterItemsBy({key: data.columnName, rows: props.dataRows, valueToFilter: e.target.value}))
                     } : (e, data) => {return;}}
                     filterInput = {_column.filterInput?_column.filterInput:""}
                     disabled = {_column.disabled?_column.disabled:false}
